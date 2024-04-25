@@ -382,6 +382,7 @@ U.Map = L.Map.extend({
     this.importer = new U.Importer(this)
     this.drop = new U.DropControl(this)
     this.share = new U.Share(this)
+    this.rules = new U.Rules(this)
     this._controls.tilelayers = new U.TileLayerControl(this)
   },
 
@@ -786,7 +787,15 @@ U.Map = L.Map.extend({
     return U.SCHEMA[option] && U.SCHEMA[option].default
   },
 
-  getOption: function (option) {
+  getRuleOption: function (option, feature) {
+    return this.rules.getOption(option, feature)
+  },
+
+  getOption: function (option, feature) {
+    if (feature) {
+      const value = this.getRuleOption(option, feature)
+      if (value !== undefined) return value
+    }
     if (U.Utils.usableOption(this.options, option)) return this.options[option]
     return this.getDefaultOption(option)
   },
@@ -1002,6 +1011,7 @@ U.Map = L.Map.extend({
   },
 
   saveSelf: async function () {
+    this.rules.commit()
     const geojson = {
       type: 'Feature',
       geometry: this.geometry(),
@@ -1548,6 +1558,7 @@ U.Map = L.Map.extend({
     this._editShapeProperties(container)
     this._editDefaultProperties(container)
     this._editInteractionsProperties(container)
+    this.rules.edit(container)
     this._editTilelayer(container)
     this._editOverlay(container)
     this._editBounds(container)
