@@ -37,6 +37,10 @@ export const SCHEMA = {
     type: Object,
     impacts: ['data'],
   },
+  condition: {
+    type: String,
+    impacts: ['data'],
+  },
   dashArray: {
     type: String,
     impacts: ['data'],
